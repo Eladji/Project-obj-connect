@@ -134,6 +134,20 @@ void setup()
 */
   delay(100);
 }
+bool isDifferenceBeyond30()
+{
+  for (int i = 0; i < 6; i++)
+  {
+    for (int j = i + 1; j < 6; j++)
+    {
+      if (abs(tableau[i] - tableau[j]) >= 30)
+      {
+        return true;
+      }
+    }
+  }
+  return false;
+}
 void enableblade()
 {
   for (pos = 0; pos <= 180; pos += 1)
