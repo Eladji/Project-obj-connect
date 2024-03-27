@@ -15,7 +15,8 @@ const int ledRed = 18;
 const int ledGreen = 19;
 const int motorL = 17;
 int pos;
-
+int tableau[10];
+int screen_state;
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET); // OLED display object
 Adafruit_MPU6050 mpu;                                                     // MPU6050 sensor object
 Adafruit_Sensor *mpu_temp, *mpu_accel, *mpu_gyro;
@@ -46,10 +47,11 @@ void motorTask(void *parameter)
 
         lastTriggerTime = currentTime;
       }
+      delay(2000); 
     }
 
     delay(1000); // delay to prevent the task from using 100% CPU
-}
+  }
 }
 
 void setup()
@@ -136,11 +138,11 @@ void setup()
 }
 bool isDifferenceBeyond30()
 {
-  for (int i = 0; i < 6; i++)
+  for (int i = 0; i < 10; i++)
   {
-    for (int j = i + 1; j < 6; j++)
+    for (int j = i + 1; j < 10; j++)
     {
-      if (abs(tableau[i] - tableau[j]) >= 30)
+      if (abs(tableau[i] - tableau[j]) >= 1.5)
       {
         return true;
       }
@@ -150,25 +152,34 @@ bool isDifferenceBeyond30()
 }
 void enableblade()
 {
-  for (pos = 0; pos <= 180; pos += 1)
-  {
-    servo.write(pos);
-    delay(15);
-  }
+
+    servo.write(180);
+    
+  
 }
 void disableblade()
-{
-  for (pos = 180; pos >= 0; pos -= 1)
-  {
-    servo.write(pos);
-    delay(15);
-  }
-}
 
+
+    servo.write(50);
+    
+  
+}
+/*void screenmanage()
+{
+  switch (screen_state)
+  {
+  case constant-expression :
+    code 
+    break;
+  
+  default:
+    break;
+  }
+}*/
 void tableauVal(int val)
 {
   // le 5 c'est la longueure du tableau -1
-  for (int i = 5; i > 0; i--)
+  for (int i = 9; i > 0; i--)
   {
     if (tableau[i - 1])
     {
@@ -177,7 +188,6 @@ void tableauVal(int val)
   }
   tableau[0] = val;
   ;
-
 }
 void loop()
 {
@@ -188,6 +198,7 @@ void loop()
   mpu_temp->getEvent(&temp);
   mpu_accel->getEvent(&accel);
   mpu_gyro->getEvent(&gyro);
+  tableauVal(int(gyro.gyro.x)); // convert value to integer and call the tableau injection fonction
   Serial.println(temp.temperature);
   Serial.println(",");
 
